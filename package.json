@@ -3,12 +3,16 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://github.com/lukasz-suliga/arkanoid-ts",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
+    "@types/node": "^20.11.28",
+    "gh-pages": "^6.1.1",
     "typescript": "^5.2.2",
     "vite": "^5.1.6"
   }
