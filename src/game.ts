@@ -23,7 +23,7 @@ export class Game {
   backgroundImage: HTMLImageElement;
   inputHandler: InputHandler;
   currentState: "starting" | "playing" | "gameOver";
-  animationFrameId?: number; // May be undefined if not currently animating
+  animationFrameId?: number;
 
   constructor(canvasId: string) {
     const canvas = document.getElementById(canvasId);
