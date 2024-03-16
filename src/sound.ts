@@ -7,12 +7,12 @@ function loadSound(url: string): HTMLAudioElement {
 }
 
 const sounds = {
-  brick: loadSound("/sounds/brick.mp3"),
-  gameover: loadSound("/sounds/gameover.mp3"),
-  go: loadSound("/sounds/go.mp3"),
-  levelup: loadSound("/sounds/levelup.mp3"),
-  loselife: loadSound("/sounds/loselife.mp3"),
-  paddle: loadSound("/sounds/paddle.mp3"),
+  brick: loadSound("sounds/brick.mp3"),
+  gameover: loadSound("sounds/gameover.mp3"),
+  go: loadSound("sounds/go.mp3"),
+  levelup: loadSound("sounds/levelup.mp3"),
+  loselife: loadSound("sounds/loselife.mp3"),
+  paddle: loadSound("sounds/paddle.mp3"),
 };
 
 function playSound(sound: HTMLAudioElement): void {
@@ -23,7 +23,7 @@ function playSound(sound: HTMLAudioElement): void {
   sound.play();
 }
 
-const music = loadSound("/sounds/music.wav");
+const music = loadSound("sounds/music.wav");
 music.loop = true;
 music.volume = 0.15;
 
