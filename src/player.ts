@@ -12,7 +12,7 @@ export class Player {
     this.highScore = Number(localStorage.getItem("highScore")) || 0;
     this.score = 0;
     this.level = 1;
-    this.lives = 2;
+    this.lives = 3;
   }
 
   increaseScore(points: number): void {

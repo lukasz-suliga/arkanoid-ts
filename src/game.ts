@@ -1,8 +1,8 @@
 import { Paddle } from "./paddle";
 import { InputHandler } from "./input"; // Make sure the file name matches the case sensitivity and naming convention
 import { Player } from "./player";
-import { Bricks } from "./bricks";
 import { Ball } from "./ball";
+import { Level } from "./level";
 import {
   drawLevel,
   drawScore,
@@ -16,11 +16,8 @@ export class Game {
   ctx: CanvasRenderingContext2D;
   player: Player;
   paddle: Paddle;
-  bricks: Bricks;
+  level: Level;
   ball: Ball;
-  backgroundImages: string[];
-  currentBackgroundIndex: number;
-  backgroundImage: HTMLImageElement;
   inputHandler: InputHandler;
   currentState: "starting" | "playing" | "gameOver";
   animationFrameId?: number;
@@ -38,32 +35,8 @@ export class Game {
 
     this.player = new Player("Player1");
     this.paddle = new Paddle(this.canvas.width, this.canvas.height);
-    this.bricks = new Bricks({
-      canvasWidth: this.canvas.width,
-      rowCount: 3,
-      columnCount: 8,
-      width: 75,
-      height: 20,
-      padding: 10,
-      offsetTop: 30,
-    });
+    this.level = new Level(this);
     this.ball = new Ball(this.canvas.width / 2, this.canvas.height - 40, 10);
-
-    this.backgroundImages = [
-      "./images/background_6.png",
-      "./images/background_7.png",
-      "./images/background_8.jpeg",
-      "./images/background_9.jpeg",
-      "./images/background_10.jpeg",
-      "./images/background_11.jpeg",
-      "./images/background_12.jpeg",
-      "./images/background_13.jpeg",
-      "./images/background_14.jpeg",
-    ];
-    this.currentBackgroundIndex = 0;
-    this.backgroundImage = new Image();
-    this.backgroundImage.src =
-      this.backgroundImages[this.currentBackgroundIndex];
 
     this.currentState = "starting";
 
@@ -81,46 +54,9 @@ export class Game {
     this.gameLoop();
   }
 
-  checkBallBrickCollision(): void {
-    this.bricks.bricksArray.forEach((column, _c) => {
-      column.forEach((brick, _r) => {
-        if (brick.health > 0) {
-          if (
-            this.ball.x > brick.x &&
-            this.ball.x < brick.x + this.bricks.brickWidth &&
-            this.ball.y > brick.y &&
-            this.ball.y < brick.y + this.bricks.brickHeight
-          ) {
-            this.ball.dy *= -1;
-            brick.health -= 1;
-            this.player.increaseScore(1); // Assuming you have an increaseScore method in Player class
-            this.checkLevelProgression();
-            playSound(sounds.brick);
-          }
-        }
-      });
-    });
-  }
-
   checkBallBottomCollision(): void {
     if (this.ball.y + this.ball.dy > this.canvas.height - this.ball.radius) {
       this.loseLife();
-    }
-  }
-
-  checkLevelProgression(): void {
-    const allBricksDestroyed = this.bricks.bricksArray.every((column) =>
-      column.every((brick) => brick.health <= 0)
-    );
-    if (allBricksDestroyed) {
-      this.player.levelUp();
-      this.bricks.resetBricks();
-      this.resetBallAndPaddle();
-      playSound(sounds.levelup);
-      this.currentBackgroundIndex =
-        (this.currentBackgroundIndex + 1) % this.backgroundImages.length;
-      this.backgroundImage.src =
-        this.backgroundImages[this.currentBackgroundIndex];
     }
   }
 
@@ -144,21 +80,14 @@ export class Game {
   updateGame(): void {
     this.paddle.update();
     this.ball.update(this.canvas.width, this.paddle);
-    this.checkBallBrickCollision();
+    this.level.checkBallBrickCollision();
     this.checkBallBottomCollision();
   }
 
   drawGame(): void {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.drawImage(
-      this.backgroundImage,
-      0,
-      0,
-      this.canvas.width,
-      this.canvas.height
-    );
+    this.level.draw(this.ctx);
     updateLivesDisplay(this.player.lives);
-    this.bricks.draw(this.ctx);
     this.ball.draw(this.ctx);
     this.paddle.draw(this.ctx);
     drawLevel(this.player.level);
@@ -243,7 +172,7 @@ export class Game {
       this.animationFrameId = undefined;
     }
     this.player.reset();
-    this.bricks.resetBricks();
+    this.level = new Level(this);
     this.resetBallAndPaddle();
     this.currentState = "playing";
     this.gameLoop();

@@ -1,3 +1,4 @@
+// bricks.ts
 type BrickConfig = {
   canvasWidth: number;
   rowCount: number;
@@ -85,7 +86,7 @@ export class Bricks {
         this.bricksArray[c][r] = {
           x: brickX,
           y: brickY,
-          health: 2,
+          health: 1,
           colorIndex,
         };
       }

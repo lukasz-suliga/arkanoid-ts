@@ -1,0 +1,302 @@
+[
+  {
+    "columnCount": 7,
+    "backgroundImage": "./images/background_6.png",
+    "bricks": [
+      {
+        "health": 1,
+        "colorIndex": 1
+      },
+      {
+        "health": 1,
+        "colorIndex": 0
+      },
+      {
+        "health": 1,
+        "colorIndex": 7
+      },
+      {
+        "health": 2,
+        "colorIndex": 6
+      },
+      {
+        "health": 2,
+        "colorIndex": 8
+      },
+      {
+        "health": 2,
+        "colorIndex": 5
+      },
+      {
+        "health": 2,
+        "colorIndex": 3
+      }
+    ]
+  },
+  {
+    "columnCount": 7,
+    "backgroundImage": "./images/background_7.png",
+    "bricks": [
+      {
+        "health": 1,
+        "colorIndex": 9
+      },
+      {
+        "health": 2,
+        "colorIndex": 8
+      },
+      {
+        "health": 2,
+        "colorIndex": 1
+      },
+      {
+        "health": 2,
+        "colorIndex": 5
+      },
+      {
+        "health": 2,
+        "colorIndex": 6
+      },
+      {
+        "health": 2,
+        "colorIndex": 3
+      },
+      {
+        "health": 1,
+        "colorIndex": 7
+      }
+    ]
+  },
+  {
+    "columnCount": 9,
+    "backgroundImage": "./images/background_8.jpeg",
+    "bricks": [
+      {
+        "health": 2,
+        "colorIndex": 2
+      },
+      {
+        "health": 1,
+        "colorIndex": 8
+      },
+      {
+        "health": 2,
+        "colorIndex": 3
+      }
+    ]
+  },
+  {
+    "columnCount": 9,
+    "backgroundImage": "./images/background_9.jpeg",
+    "bricks": [
+      {
+        "health": 1,
+        "colorIndex": 4
+      },
+      {
+        "health": 1,
+        "colorIndex": 6
+      },
+      {
+        "health": 2,
+        "colorIndex": 2
+      },
+      {
+        "health": 1,
+        "colorIndex": 7
+      },
+      {
+        "health": 1,
+        "colorIndex": 5
+      },
+      {
+        "health": 1,
+        "colorIndex": 1
+      },
+      {
+        "health": 2,
+        "colorIndex": 3
+      },
+      {
+        "health": 2,
+        "colorIndex": 0
+      },
+      {
+        "health": 2,
+        "colorIndex": 9
+      }
+    ]
+  },
+  {
+    "columnCount": 9,
+    "backgroundImage": "./images/background_13.jpeg",
+    "bricks": [
+      {
+        "health": 2,
+        "colorIndex": 5
+      },
+      {
+        "health": 2,
+        "colorIndex": 3
+      },
+      {
+        "health": 1,
+        "colorIndex": 4
+      }
+    ]
+  },
+  {
+    "columnCount": 8,
+    "backgroundImage": "./images/background_10.jpeg",
+    "bricks": [
+      {
+        "health": 1,
+        "colorIndex": 0
+      },
+      {
+        "health": 2,
+        "colorIndex": 2
+      },
+      {
+        "health": 1,
+        "colorIndex": 1
+      },
+      {
+        "health": 1,
+        "colorIndex": 4
+      },
+      {
+        "health": 1,
+        "colorIndex": 5
+      },
+      {
+        "health": 1,
+        "colorIndex": 9
+      },
+      {
+        "health": 2,
+        "colorIndex": 7
+      },
+      {
+        "health": 1,
+        "colorIndex": 8
+      },
+      {
+        "health": 2,
+        "colorIndex": 6
+      }
+    ]
+  },
+  {
+    "columnCount": 9,
+    "backgroundImage": "./images/background_7.png",
+    "bricks": [
+      {
+        "health": 1,
+        "colorIndex": 5
+      },
+      {
+        "health": 2,
+        "colorIndex": 9
+      },
+      {
+        "health": 1,
+        "colorIndex": 7
+      },
+      {
+        "health": 1,
+        "colorIndex": 6
+      },
+      {
+        "health": 2,
+        "colorIndex": 3
+      },
+      {
+        "health": 2,
+        "colorIndex": 4
+      },
+      {
+        "health": 1,
+        "colorIndex": 0
+      },
+      {
+        "health": 1,
+        "colorIndex": 1
+      }
+    ]
+  },
+  {
+    "columnCount": 8,
+    "backgroundImage": "./images/background_6.png",
+    "bricks": [
+      {
+        "health": 1,
+        "colorIndex": 5
+      },
+      {
+        "health": 1,
+        "colorIndex": 7
+      },
+      {
+        "health": 1,
+        "colorIndex": 9
+      },
+      {
+        "health": 2,
+        "colorIndex": 6
+      }
+    ]
+  },
+  {
+    "columnCount": 7,
+    "backgroundImage": "./images/background_10.jpeg",
+    "bricks": [
+      {
+        "health": 2,
+        "colorIndex": 0
+      },
+      {
+        "health": 2,
+        "colorIndex": 7
+      },
+      {
+        "health": 1,
+        "colorIndex": 2
+      },
+      {
+        "health": 2,
+        "colorIndex": 9
+      },
+      {
+        "health": 2,
+        "colorIndex": 8
+      },
+      {
+        "health": 1,
+        "colorIndex": 3
+      },
+      {
+        "health": 2,
+        "colorIndex": 4
+      }
+    ]
+  },
+  {
+    "columnCount": 9,
+    "backgroundImage": "./images/background_12.jpeg",
+    "bricks": [
+      {
+        "health": 2,
+        "colorIndex": 8
+      },
+      {
+        "health": 2,
+        "colorIndex": 6
+      },
+      {
+        "health": 2,
+        "colorIndex": 4
+      }
+    ]
+  }
+]
