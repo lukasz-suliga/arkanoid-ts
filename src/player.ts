@@ -11,8 +11,9 @@ export class Player {
     // Using `Number()` or the unary plus operator `+` converts the string to a number. If `localStorage.getItem()` returns `null`, the fallback value (`0`) is used.
     this.highScore = Number(localStorage.getItem("highScore")) || 0;
     this.score = 0;
-    this.level = 1;
-    this.lives = 3;
+    this.level = 0;
+    this.lives = 0;
+    this.reset();
   }
 
   increaseScore(points: number): void {

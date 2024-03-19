@@ -1,17 +1,36 @@
 #gameContainer {
-  text-align: center; /* Center the canvas and the lives display */
-  position: relative; /* Allows absolute positioning relative to this container */
+  max-width: 800px;
+  margin: auto;
+  position: relative;
 }
+
 canvas {
-  background: #eee;
-  display: inline-block; /* Allows UI elements to sit alongside the canvas */
-  vertical-align: top; /* Aligns canvas and UI elements at the top */
+  max-width: 100%;
+  height: auto;
 }
+
+body,
+html {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+  overflow: hidden; /* Prevent scrolling */
+}
+
+#uiContainer {
+  width: 100%;
+  max-width: 800px;
+}
+
 #livesDisplay {
   color: white;
   font-size: 24px;
   padding-top: 10px; /* Spacing above the lives */
 }
+
 .heart {
   height: 24px; /* Set the size of your heart image */
   width: 24px;
@@ -20,29 +39,17 @@ canvas {
   background-size: cover;
   margin: 5px;
 }
-body {
-  background-color: black;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-#uiContainer {
-  width: 800px; /* Match the width of the canvas */
-  display: flex;
-  justify-content: space-between; /* Aligns children to the left and right */
-  color: white;
-  font-size: 24px;
-}
+
 #scoreContainer {
   text-align: left; /* Align text to the left */
   color: green;
 }
+
 #highScoreDisplay {
   font-size: 18px; /* A smaller font size for the high score */
   color: green; /* A different color to distinguish the high score */
 }
+
 #levelDisplay {
   color: green;
 }

@@ -39,6 +39,7 @@ export class Game {
     this.ball = new Ball(this.canvas.width / 2, this.canvas.height - 40, 10);
 
     this.currentState = "starting";
+    // this.currentState = "playing";
 
     this.inputHandler = new InputHandler(
       this.paddle,
