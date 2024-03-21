@@ -31,30 +31,21 @@ export function drawHighScore(highScore: number): void {
   }
 }
 
-export function resizeCanvas() {
-  const canvas = document.getElementById("gameCanvas");
-  if (!(canvas instanceof HTMLCanvasElement)) {
-    throw new Error("Canvas element not found");
-  }
-  const canvasAspectRatio = 800 / 600; // Your canvas default size
-  const windowWidth = window.innerWidth;
-  const windowHeight = window.innerHeight;
-  const windowAspectRatio = windowWidth / windowHeight;
-  let newCanvasWidth, newCanvasHeight;
+export function resizeCanvas(game: any) {
+  const maxWidth = 800; // Original width
+  const maxHeight = 600; // Original height
+  const scaleWidth = window.innerWidth / maxWidth;
+  const scaleHeight = window.innerHeight / maxHeight;
+  let scale = Math.min(scaleWidth, scaleHeight); // Use the smaller scale factor to maintain aspect ratio
 
-  if (windowAspectRatio > canvasAspectRatio) {
-    // Window is wider than the desired game ratio
-    newCanvasHeight = windowHeight;
-    newCanvasWidth = newCanvasHeight * canvasAspectRatio;
-  } else {
-    // Window is taller than the desired game ratio
-    newCanvasWidth = windowWidth;
-    newCanvasHeight = newCanvasWidth / canvasAspectRatio;
-  }
+  // Optionally limit the maximum scale to avoid the canvas being too large
+  const maxScale = 1; // Change this to allow the canvas to be larger than its original size
+  scale = Math.min(scale, maxScale);
 
-  // Set new canvas size
-  canvas.width = newCanvasWidth;
-  canvas.height = newCanvasHeight;
+  // Save scale for use in drawing
+  game.scale = scale;
 
-  // Adjust game UI if necessary
+  // Adjust canvas style to scale to viewport
+  game.canvas.style.width = `${maxWidth * scale}px`;
+  game.canvas.style.height = `${maxHeight * scale}px`;
 }

@@ -10,6 +10,7 @@ import {
   drawHighScore,
 } from "./drawing";
 import { sounds, playSound } from "./sound";
+import { resizeCanvas } from "./drawing.js";
 
 export class Game {
   canvas: HTMLCanvasElement;
@@ -21,6 +22,7 @@ export class Game {
   inputHandler: InputHandler;
   currentState: "starting" | "playing" | "gameOver";
   animationFrameId?: number;
+  scale: number;
 
   constructor(canvasId: string) {
     const canvas = document.getElementById(canvasId);
@@ -30,6 +32,13 @@ export class Game {
     this.canvas = canvas;
     this.canvas.width = 800;
     this.canvas.height = 600;
+
+    window.addEventListener("resize", () => resizeCanvas(this));
+
+    const scaleWidth = window.innerWidth / canvas.width;
+    const scaleHeight = window.innerHeight / canvas.height;
+
+    this.scale = Math.min(scaleWidth, scaleHeight);
 
     this.ctx = this.canvas.getContext("2d")!;
 
@@ -98,17 +107,18 @@ export class Game {
 
   drawStartScreen(): void {
     const splashImg = new Image();
+    console.log(this.scale);
     splashImg.onload = () => {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // Clear the canvas first
       this.ctx.drawImage(
         splashImg,
         0,
         0,
-        this.canvas.width,
-        this.canvas.height
+        this.canvas.width, // Scale width
+        this.canvas.height // Scale height
       );
     };
-    splashImg.src = "./images/splash_screen_2.png";
+    splashImg.src = "./images/splash_screen_3.png";
   }
 
   drawGameOver(): void {
