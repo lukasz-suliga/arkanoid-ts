@@ -1,10 +1,10 @@
 // Level.ts
 import { Brick } from "./brick";
-import { sounds, playSound } from "./sound";
+import { Game } from "./game";
 import levels from "./levels.json";
 
 export class Level {
-  private game: any;
+  private game: Game;
   private backgroundImage: HTMLImageElement;
   private backgroundImages: string[];
   private bricks: Brick[] = [];
@@ -16,7 +16,7 @@ export class Level {
   private padding: number;
   private offsetTop: number;
 
-  constructor(game: any) {
+  constructor(game: Game) {
     this.game = game;
     this.backgroundImages = [
       "./images/background_6.png",
@@ -111,7 +111,7 @@ export class Level {
       this.game.player.levelUp();
       this.generateBricks();
       this.game.resetBallAndPaddle();
-      playSound(sounds.levelup);
+      this.game.soundManager.playSound("levelup");
       this.loadBackgroundImage();
     }
   }
@@ -128,7 +128,7 @@ export class Level {
           this.game.ball.dy *= -1;
           brick.hit();
           this.game.player.increaseScore(1);
-          playSound(sounds.brick);
+          this.game.soundManager.playSound("brick");
           this.checkLevelProgression();
         }
       }

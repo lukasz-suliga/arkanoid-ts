@@ -12,6 +12,7 @@ export class Paddle {
   animationFrame: number;
   frameDelay: number;
   frameDelayCounter: number;
+  lastTouchX: number | null;
 
   constructor(canvasWidth: number, canvasHeight: number) {
     this.width = 90;
@@ -20,7 +21,7 @@ export class Paddle {
     this.y = canvasHeight - this.height - 10; // Adjust the paddle's position from the bottom
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
-    this.speed = 6;
+    this.speed = 12;
     this.movingLeft = false;
     this.movingRight = false;
     this.paddleImages = [];
@@ -28,6 +29,7 @@ export class Paddle {
     this.frameDelay = 10; // Number of game loops to wait before switching frames
     this.frameDelayCounter = 0; // Counter for the delay
     this.preloadPaddleImages();
+    this.lastTouchX = null;
   }
 
   preloadPaddleImages(): void {

@@ -1,4 +1,4 @@
-import { sounds, playSound } from "./sound.js";
+import { Game } from "./game.js";
 
 export class Ball {
   x: number;
@@ -9,11 +9,13 @@ export class Ball {
   baseSpeed: number;
   speedIncrease: number;
   ballImage: HTMLImageElement;
+  game: Game;
 
-  constructor(x: number, y: number, radius: number) {
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
+  constructor(game: Game) {
+    this.game = game;
+    this.x = this.game.canvas.width / 2;
+    this.y = this.game.canvas.height - 40;
+    this.radius = 10;
     this.baseSpeed = 5; // Starting speed of the ball
     this.speedIncrease = 0; // Speed increase that can be adjusted during the game
     this.ballImage = new Image();
@@ -82,7 +84,7 @@ export class Ball {
       this.dy = -this.dy;
       const deltaX = this.x - (paddle.x + paddle.width / 2);
       this.dx = deltaX * 0.1; // Adjust for more responsive control based on collision point
-      playSound(sounds.paddle);
+      this.game.soundManager.playSound("paddle");
     }
 
     this.x += this.dx;

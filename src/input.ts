@@ -1,25 +1,10 @@
-import { playMusic } from "./sound.js";
-import { Paddle } from "./paddle.js"; // Assuming you have a Paddle class
-
-type GameState = "playing" | "gameOver" | "starting";
+import { Game } from "./game.js";
 
 export class InputHandler {
-  paddle: Paddle;
-  getCurrentState: () => GameState;
-  restartGame: () => void;
-  startGame: () => void;
-  lastTouchX: number | null = null;
+  private game: Game;
 
-  constructor(
-    paddle: Paddle,
-    getCurrentState: () => GameState,
-    restartGame: () => void,
-    startGame: () => void
-  ) {
-    this.paddle = paddle;
-    this.getCurrentState = getCurrentState;
-    this.restartGame = restartGame;
-    this.startGame = startGame;
+  constructor(game: Game) {
+    this.game = game;
 
     document.addEventListener("keydown", (event) => this.keyDownHandler(event));
     document.addEventListener("keyup", (event) => this.keyUpHandler(event));
@@ -32,71 +17,139 @@ export class InputHandler {
     document.addEventListener("touchend", () => this.touchEndHandler());
   }
 
-  touchStartHandler(event: TouchEvent): void {
-    const state = this.getCurrentState();
+  private touchStartHandler(event: TouchEvent): void {
+    const state = this.game.currentState;
     if (state === "starting") {
-      playMusic();
-      this.startGame();
+      this.game.startGame();
     } else if (state === "gameOver") {
-      this.restartGame();
+      this.game.restartGame();
     }
-    // Store the initial touch position
-    this.lastTouchX = event.touches[0].clientX;
+    this.game.paddle.lastTouchX = event.touches[0].clientX;
   }
 
-  touchMoveHandler(event: TouchEvent): void {
-    if (!this.lastTouchX) return; // Ensure we have a starting point
+  private touchMoveHandler(event: TouchEvent): void {
+    if (!this.game.paddle.lastTouchX) return;
     const currentTouchX = event.touches[0].clientX;
-    const deltaX = currentTouchX - this.lastTouchX;
+    const deltaX = currentTouchX - this.game.paddle.lastTouchX;
 
     if (deltaX < 0) {
-      this.paddle.movingLeft = true;
-      this.paddle.movingRight = false;
+      this.game.paddle.movingLeft = true;
+      this.game.paddle.movingRight = false;
     } else if (deltaX > 0) {
-      this.paddle.movingLeft = false;
-      this.paddle.movingRight = true;
+      this.game.paddle.movingLeft = false;
+      this.game.paddle.movingRight = true;
     }
-    this.lastTouchX = currentTouchX; // Update the last touch position for the next move event
+    this.game.paddle.lastTouchX = currentTouchX;
   }
 
-  touchEndHandler(): void {
-    // Reset paddle movement and last touch position on touch end
-    this.paddle.movingLeft = false;
-    this.paddle.movingRight = false;
-    this.lastTouchX = null;
+  private touchEndHandler(): void {
+    this.game.paddle.movingLeft = false;
+    this.game.paddle.movingRight = false;
+    this.game.paddle.lastTouchX = null;
   }
 
-  keyDownHandler(event: KeyboardEvent): void {
-    const state = this.getCurrentState();
+  private keyDownHandler(event: KeyboardEvent): void {
+    const state = this.game.currentState;
 
     if (state === "playing") {
       switch (event.key) {
         case "ArrowLeft":
-          this.paddle.movingLeft = true;
+          this.game.paddle.movingLeft = true;
           break;
         case "ArrowRight":
-          this.paddle.movingRight = true;
+          this.game.paddle.movingRight = true;
+          break;
+        case "Escape":
+          this.game.paddle.movingRight = false;
+          this.game.paddle.movingLeft = false;
+          this.game.previousState = "playing";
+          this.game.currentState = "options";
           break;
       }
     } else if (state === "gameOver") {
-      // Call the restart game method on any key press when the game is over
-      this.restartGame();
+      this.game.restartGame();
     } else if (state === "starting") {
-      playMusic();
-      this.startGame();
+      if (this.game.soundManager.musicOn) {
+        // FIXME: shouldn't run each time
+        this.game.soundManager.tryPlayMusic();
+      }
+
+      switch (event.key) {
+        case "ArrowUp":
+          this.game.activeStartMenuItem =
+            (this.game.activeStartMenuItem -
+              1 +
+              this.game.startMenuItems.length) %
+            this.game.startMenuItems.length;
+          this.game.drawStartScreen();
+          break;
+        case "ArrowDown":
+          this.game.activeStartMenuItem =
+            (this.game.activeStartMenuItem + 1) %
+            this.game.startMenuItems.length;
+          this.game.drawStartScreen();
+          break;
+        case "Enter":
+          if (this.game.activeStartMenuItem === 0) {
+            this.game.startGame();
+          } else if (this.game.activeStartMenuItem === 1) {
+            this.game.previousState = "starting";
+            this.game.currentState = "options";
+            this.game.drawOptionsScreen();
+          }
+          break;
+      }
+    } else if (state === "options") {
+      switch (event.key) {
+        case "ArrowUp":
+          this.game.activeOptionsMenuItem =
+            (this.game.activeOptionsMenuItem -
+              1 +
+              this.game.optionsMenuItems.length) %
+            this.game.optionsMenuItems.length;
+          break;
+        case "ArrowDown":
+          this.game.activeOptionsMenuItem =
+            (this.game.activeOptionsMenuItem + 1) %
+            this.game.optionsMenuItems.length;
+          break;
+        case "Enter":
+          if (this.game.activeOptionsMenuItem === 0) {
+            this.game.soundManager.toggleMusic();
+          } else if (this.game.activeOptionsMenuItem === 1) {
+            this.game.soundManager.toggleSound();
+          } else if (this.game.activeOptionsMenuItem === 2) {
+            this.game.currentState = this.game.previousState;
+          }
+          break;
+        case "Escape":
+          this.game.currentState = this.game.previousState;
+          break;
+      }
+      if (this.game.currentState === "options") {
+        this.game.drawOptionsScreen(); // Redraw options screen only if still in "options" state
+      } else if (this.game.currentState === "starting") {
+        this.game.drawStartScreen(); // Draw start screen if the state has changed to "starting"
+      } else if (this.game.currentState === "playing") {
+        this.game.updateGame();
+        this.game.drawGame();
+        this.game.animationFrameId = requestAnimationFrame(() =>
+          this.game.gameLoop()
+        );
+      }
     }
   }
 
-  keyUpHandler(event: KeyboardEvent): void {
-    const state = this.getCurrentState();
+  private keyUpHandler(event: KeyboardEvent): void {
+    const state = this.game.currentState;
 
     if (state === "playing") {
       switch (event.key) {
         case "ArrowLeft":
-          this.paddle.movingLeft = false;
+          this.game.paddle.movingLeft = false;
           break;
         case "ArrowRight":
-          this.paddle.movingRight = false;
+          this.game.paddle.movingRight = false;
           break;
       }
     }

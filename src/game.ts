@@ -9,8 +9,10 @@ import {
   updateLivesDisplay,
   drawHighScore,
 } from "./drawing";
-import { sounds, playSound } from "./sound";
+import { SoundManager } from "./sound";
 import { resizeCanvas } from "./drawing.js";
+
+export type GameState = "playing" | "gameOver" | "starting" | "options";
 
 export class Game {
   canvas: HTMLCanvasElement;
@@ -20,9 +22,15 @@ export class Game {
   level: Level;
   ball: Ball;
   inputHandler: InputHandler;
-  currentState: "starting" | "playing" | "gameOver";
+  currentState: GameState;
+  previousState: GameState;
   animationFrameId?: number;
   scale: number;
+  startMenuItems: string[] = ["Start", "Options"];
+  activeStartMenuItem: number = 0; // Index of the active menu item, 0 for "Start"
+  activeOptionsMenuItem: number = 0; // 0 for Music, 1 for Sound, 2 for Back
+  optionsMenuItems: string[] = ["Music: on", "Sound: on", "Back"];
+  soundManager: SoundManager;
 
   constructor(canvasId: string) {
     const canvas = document.getElementById(canvasId);
@@ -45,22 +53,19 @@ export class Game {
     this.player = new Player("Player1");
     this.paddle = new Paddle(this.canvas.width, this.canvas.height);
     this.level = new Level(this);
-    this.ball = new Ball(this.canvas.width / 2, this.canvas.height - 40, 10);
+    this.ball = new Ball(this);
 
     this.currentState = "starting";
-    // this.currentState = "playing";
+    this.previousState = "starting";
 
-    this.inputHandler = new InputHandler(
-      this.paddle,
-      () => this.currentState,
-      () => this.restartGame(),
-      () => this.startGame()
-    );
+    this.inputHandler = new InputHandler(this);
+
+    this.soundManager = new SoundManager();
   }
 
   startGame(): void {
     this.currentState = "playing";
-    playSound(sounds.go);
+    this.soundManager.playSound("go");
     this.gameLoop();
   }
 
@@ -75,10 +80,10 @@ export class Game {
     updateLivesDisplay(this.player.lives);
     if (this.player.lives <= 0) {
       this.currentState = "gameOver";
-      playSound(sounds.gameover);
+      this.soundManager.playSound("gameover");
     } else {
       this.resetBallAndPaddle();
-      playSound(sounds.loselife);
+      this.soundManager.playSound("loselife");
     }
   }
 
@@ -107,8 +112,12 @@ export class Game {
 
   drawStartScreen(): void {
     const splashImg = new Image();
-    console.log(this.scale);
     splashImg.onload = () => {
+      // Set font for the text
+      this.ctx.font = "80px 'Bangers', cursive";
+      this.ctx.textAlign = "center";
+      this.ctx.textBaseline = "middle";
+
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // Clear the canvas first
       this.ctx.drawImage(
         splashImg,
@@ -117,8 +126,54 @@ export class Game {
         this.canvas.width, // Scale width
         this.canvas.height // Scale height
       );
+
+      // Loop through menu items to draw them
+      this.startMenuItems.forEach((item, index) => {
+        this.ctx.fillStyle =
+          index === this.activeStartMenuItem ? "white" : "grey"; // Highlight active item
+        let yOffset = (index - 1) * 70; // Adjust based on your layout
+        this.ctx.fillText(
+          item,
+          this.canvas.width / 2,
+          this.canvas.height / 2 + yOffset
+        );
+      });
     };
     splashImg.src = "./images/splash_screen_3.png";
+  }
+
+  drawOptionsScreen(): void {
+    const optionsImg = new Image();
+    optionsImg.src = "./images/splash_screen_2.png";
+    optionsImg.onload = () => {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.drawImage(
+        optionsImg,
+        0,
+        0,
+        this.canvas.width,
+        this.canvas.height
+      );
+
+      // Update the options text based on current settings
+      this.optionsMenuItems[0] = `Music: ${
+        this.soundManager.musicOn ? "on" : "off"
+      }`;
+      this.optionsMenuItems[1] = `Sound: ${
+        this.soundManager.soundOn ? "on" : "off"
+      }`;
+
+      this.ctx.textAlign = "center";
+      this.ctx.textBaseline = "middle";
+
+      // Draw options menu items
+      this.optionsMenuItems.forEach((item, index) => {
+        this.ctx.fillStyle =
+          index === this.activeOptionsMenuItem ? "white" : "grey";
+        let yOffset = index * 70 + 200; // Adjust based on layout, starting at a different point
+        this.ctx.fillText(item, this.canvas.width / 2, yOffset);
+      });
+    };
   }
 
   drawGameOver(): void {
@@ -169,6 +224,9 @@ export class Game {
         this.drawGame();
         // Schedule the next frame
         this.animationFrameId = requestAnimationFrame(() => this.gameLoop());
+        break;
+      case "options":
+        this.drawOptionsScreen();
         break;
       case "gameOver":
         // Draw the game over screen but do not schedule a new frame
