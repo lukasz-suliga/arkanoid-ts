@@ -3,12 +3,6 @@ import { InputHandler } from "./input"; // Make sure the file name matches the c
 import { Player } from "./player";
 import { Ball } from "./ball";
 import { Level } from "./level";
-import {
-  drawLevel,
-  drawScore,
-  updateLivesDisplay,
-  drawHighScore,
-} from "./drawing";
 import { SoundManager } from "./sound";
 import { resizeCanvas } from "./drawing.js";
 
@@ -38,8 +32,11 @@ export class Game {
       throw new Error("Canvas element not found");
     }
     this.canvas = canvas;
-    this.canvas.width = 800;
-    this.canvas.height = 600;
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+
+    console.log(this.canvas.width, " - canvas width when starting");
+    console.log(this.canvas.height, " - canvas height when starting");
 
     window.addEventListener("resize", () => resizeCanvas(this));
 
@@ -77,7 +74,6 @@ export class Game {
 
   loseLife(): void {
     this.player.lives -= 1;
-    updateLivesDisplay(this.player.lives);
     if (this.player.lives <= 0) {
       this.currentState = "gameOver";
       this.soundManager.playSound("gameover");
@@ -99,61 +95,140 @@ export class Game {
     this.checkBallBottomCollision();
   }
 
+  drawUI(): void {
+    // Define UI zones
+    const topUIHeight = 40; // Height of the top UI area
+    const bottomUIHeight = 40; // Height of the bottom UI area
+    const gameAreaHeight = this.canvas.height - topUIHeight - bottomUIHeight;
+
+    // Prepare common styles
+    this.ctx.font = "30px 'Bangers', cursive";
+    this.ctx.textBaseline = "top";
+
+    // Draw the score in the top left corner of the top UI zone
+    this.ctx.textAlign = "left";
+    this.ctx.fillStyle = "white"; // Color for the score
+    this.ctx.fillText(`Score: ${this.player.score}`, 10, 5);
+
+    // Draw the high score in the top right corner of the top UI zone
+    this.ctx.textAlign = "right";
+    this.ctx.fillText(
+      `High Score: ${this.player.highScore}`,
+      this.canvas.width - 10,
+      5
+    );
+
+    // Draw the lives in the bottom left corner of the bottom UI zone
+    this.ctx.textAlign = "left";
+    this.ctx.fillStyle = "white"; // Keep white color for the text "Lives"
+    this.ctx.fillText("Lives:", 10, gameAreaHeight + topUIHeight + 5);
+
+    // Draw the hearts for lives in red, below the gameplay area
+    this.ctx.fillStyle = "red"; // Set color to red for hearts
+    for (let i = 0; i < this.player.lives; i++) {
+      // Adjust positioning and size as needed for the hearts
+      this.ctx.fillText("❤", 80 + i * 30, gameAreaHeight + topUIHeight + 5); // Start after "Lives:" text
+    }
+
+    // Draw the level in the bottom right corner of the bottom UI zone
+    this.ctx.textAlign = "right";
+    this.ctx.fillStyle = "white"; // Color for the level
+    this.ctx.fillText(
+      `Level: ${this.player.level}`,
+      this.canvas.width - 10,
+      gameAreaHeight + topUIHeight + 5
+    );
+  }
+
+  // Now call drawUI in drawGame
   drawGame(): void {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.level.draw(this.ctx);
-    updateLivesDisplay(this.player.lives);
     this.ball.draw(this.ctx);
     this.paddle.draw(this.ctx);
-    drawLevel(this.player.level);
-    drawScore(this.player.score);
-    drawHighScore(this.player.highScore);
+    this.drawUI(); // Now drawing all UI elements on the canvas
   }
 
+  drawBackground(
+    image: HTMLImageElement,
+    focusStartX: number,
+    focusEndX: number
+  ): void {
+    const imageAspectRatio = image.width / image.height;
+    const canvasAspectRatio = this.canvas.width / this.canvas.height;
+
+    let scale: number, sx: number, sy: number, sWidth: number, sHeight: number;
+
+    if (canvasAspectRatio > imageAspectRatio) {
+      // Window is wider than the image's aspect ratio, scale based on width
+      scale = this.canvas.width / image.width;
+      sWidth = image.width;
+      sHeight = this.canvas.height / scale;
+      sx = 0; // Start from the beginning of the image
+      sy = (image.height - sHeight) / 2; // Vertically center the drawing
+    } else {
+      // Window is taller than the image's aspect ratio, scale based on height
+      scale = this.canvas.height / image.height;
+      sHeight = image.height;
+      const focusWidth = focusEndX - focusStartX;
+      sx = focusStartX + (focusWidth - this.canvas.width / scale) / 2;
+      sx = Math.max(sx, 0);
+      sx = Math.min(sx, image.width - this.canvas.width / scale);
+      sy = 0; // Start from the top of the image
+      sWidth = this.canvas.width / scale;
+    }
+
+    this.ctx.drawImage(
+      image,
+      sx,
+      sy,
+      sWidth,
+      sHeight,
+      0,
+      0,
+      this.canvas.width,
+      this.canvas.height
+    );
+  }
+
+  drawMenuText(menuItems: string[], activeItemIndex: number): void {
+    const startX = this.canvas.width / 2; // Center horizontally
+    const startY = this.canvas.height / 2 - (menuItems.length * 35) / 2; // Start in the middle vertically
+    const itemSpacing = 70; // Space between items
+
+    this.ctx.textAlign = "center";
+    this.ctx.textBaseline = "middle";
+    this.ctx.font = "80px 'Bangers', cursive"; // Adjust as needed
+
+    menuItems.forEach((item, index) => {
+      this.ctx.fillStyle = index === activeItemIndex ? "white" : "grey"; // Highlight the active item
+      const yOffset = startY + index * itemSpacing; // Calculate the Y position for each item
+      this.ctx.fillText(item, startX, yOffset);
+    });
+  }
+
+  // Adjust drawStartScreen and redrawCurrentState to use drawBackground
   drawStartScreen(): void {
     const splashImg = new Image();
+    splashImg.src = "./images/splash_screen_32x9_1.png";
     splashImg.onload = () => {
-      // Set font for the text
-      this.ctx.font = "80px 'Bangers', cursive";
-      this.ctx.textAlign = "center";
-      this.ctx.textBaseline = "middle";
-
-      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // Clear the canvas first
-      this.ctx.drawImage(
-        splashImg,
-        0,
-        0,
-        this.canvas.width, // Scale width
-        this.canvas.height // Scale height
-      );
-
-      // Loop through menu items to draw them
-      this.startMenuItems.forEach((item, index) => {
-        this.ctx.fillStyle =
-          index === this.activeStartMenuItem ? "white" : "grey"; // Highlight active item
-        let yOffset = (index - 1) * 70; // Adjust based on your layout
-        this.ctx.fillText(
-          item,
-          this.canvas.width / 2,
-          this.canvas.height / 2 + yOffset
-        );
-      });
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      // Specify the desired focus area for this background
+      const focusStartX = 1150;
+      const focusEndX = 1550;
+      this.drawBackground(splashImg, focusStartX, focusEndX);
+      this.drawMenuText(this.startMenuItems, this.activeStartMenuItem);
     };
-    splashImg.src = "./images/splash_screen_3.png";
   }
 
   drawOptionsScreen(): void {
-    const optionsImg = new Image();
-    optionsImg.src = "./images/splash_screen_2.png";
-    optionsImg.onload = () => {
+    const splashImg = new Image();
+    splashImg.src = "./images/splash_screen_32x9_2.png";
+    splashImg.onload = () => {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.ctx.drawImage(
-        optionsImg,
-        0,
-        0,
-        this.canvas.width,
-        this.canvas.height
-      );
+      // Specify the desired focus area for this background
+      this.drawBackground(splashImg, 950, 1350);
+      // Draw text and other UI elements as needed
 
       // Update the options text based on current settings
       this.optionsMenuItems[0] = `Music: ${
@@ -163,16 +238,7 @@ export class Game {
         this.soundManager.soundOn ? "on" : "off"
       }`;
 
-      this.ctx.textAlign = "center";
-      this.ctx.textBaseline = "middle";
-
-      // Draw options menu items
-      this.optionsMenuItems.forEach((item, index) => {
-        this.ctx.fillStyle =
-          index === this.activeOptionsMenuItem ? "white" : "grey";
-        let yOffset = index * 70 + 200; // Adjust based on layout, starting at a different point
-        this.ctx.fillText(item, this.canvas.width / 2, yOffset);
-      });
+      this.drawMenuText(this.optionsMenuItems, this.activeOptionsMenuItem);
     };
   }
 
@@ -181,35 +247,25 @@ export class Game {
       cancelAnimationFrame(this.animationFrameId);
     }
     const gameOverImg = new Image();
+    gameOverImg.src = "./images/splash_screen_32x9_3.png"; // Use the specified image
+
     gameOverImg.onload = () => {
-      // Clear the canvas
-      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // Clear the canvas
+      const focusStartX = 1150;
+      const focusEndX = 1550;
+      this.drawBackground(gameOverImg, focusStartX, focusEndX);
 
-      // Draw the image now that it's loaded
-      this.ctx.drawImage(
-        gameOverImg,
-        0,
-        0,
-        this.canvas.width,
-        this.canvas.height
-      );
+      this.ctx.textAlign = "center";
+      this.ctx.textBaseline = "middle";
+      this.ctx.font = "80px 'Bangers', cursive"; // Adjust font size and family as needed
 
-      // Optionally draw the text
-      //   this.ctx.font = "48px Arial";
-      //   this.ctx.fillStyle = "#0095DD";
-      //   this.ctx.fillText(
-      //     "Game Over!",
-      //     this.canvas.width / 4,
-      //     this.canvas.height / 2
-      //   );
-      //   this.ctx.font = "24px Arial";
-      //   this.ctx.fillText(
-      //     "Press any key to restart",
-      //     this.canvas.width / 4,
-      //     this.canvas.height / 2 + 50
-      //   );
+      const centerX = this.canvas.width / 2;
+      const centerY = this.canvas.height / 2;
+
+      // Draw the text at the center of the canvas
+      this.ctx.fillStyle = "white"; // Set text color
+      this.ctx.fillText("Game Over!", centerX, centerY); // Adjust the text as needed
     };
-    gameOverImg.src = "./images/game_over_screen_3.png";
   }
 
   gameLoop(): void {

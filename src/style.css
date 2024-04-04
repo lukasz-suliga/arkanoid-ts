@@ -1,18 +1,8 @@
-#gameContainer {
-  max-width: 800px;
-  margin: auto;
-  position: relative;
-}
-
-canvas {
-  max-width: 100%;
-  height: auto;
-}
-
 body,
 html {
   height: 100%;
   margin: 0;
+  padding: 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -20,36 +10,7 @@ html {
   overflow: hidden; /* Prevent scrolling */
 }
 
-#uiContainer {
+/* canvas {
   width: 100%;
-  max-width: 800px;
-}
-
-#livesDisplay {
-  color: white;
-  font-size: 24px;
-  padding-top: 10px; /* Spacing above the lives */
-}
-
-.heart {
-  height: 24px; /* Set the size of your heart image */
-  width: 24px;
-  display: inline-block;
-  background: url("/images/60-Breakout-Tiles.png") no-repeat center;
-  background-size: cover;
-  margin: 5px;
-}
-
-#scoreContainer {
-  text-align: left; /* Align text to the left */
-  color: green;
-}
-
-#highScoreDisplay {
-  font-size: 18px; /* A smaller font size for the high score */
-  color: green; /* A different color to distinguish the high score */
-}
-
-#levelDisplay {
-  color: green;
-}
+  height: auto;
+} */

@@ -3,27 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Bangers&display=swap"
-      rel="stylesheet"
-    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Arkanoid GPT</title>
-  </head>
-  <body>
-    <div id="gameContainer">
-      <canvas id="gameCanvas"></canvas>
-      <div id="uiContainer">
-        <div id="scoreContainer">
-          <div id="scoreDisplay">Score: 0</div>
-          <div id="highScoreDisplay">High Score: 0</div>
-        </div>
-        <div id="livesDisplay"></div>
-        <div id="levelDisplay">Level: 1</div>
-      </div>
-    </div>
     <link rel="stylesheet" href="/src/style.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+  </head>
+  <body>
+    <canvas id="gameCanvas"></canvas>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
